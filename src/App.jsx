@@ -7,10 +7,13 @@ const App = () => {
   const connectWithMetamask = useMetamask();
   console.log("💯 Address:", address);
 
-    // Initialize our editionDrop contract
   const editionDrop = useEditionDrop("0xd844F24e6916C3cc569FaAE9FfD2aD9e9bCCe772")
-  // State variable for us to know if user has our NFT.
+  // Initialize our editionDrop contract
   const [hasClaimedNFT, setHasClaimedNFT] = useState(false);
+  // State variable for us to know if user has our NFT.
+  const [isClaiming, setIsClaiming] = useState(false);
+  // isClaiming keeps a loading state while the NFT is minting.
+
 
   useEffect(() => {
     if (!address){
@@ -22,7 +25,7 @@ const App = () => {
         const balance = await editionDrop.balanceOf(address, 0);
         if (balance.gt(0)){
           setHasClaimedNFT(true);
-          console.log("🌚 This user has a membership NFT.");
+          console.log("🙌🏽 This user has a membership NFT.");
         } else {
           setHasClaimedNFT(false);
           console.log("🍅 This user doesn't have a membership NFT...");
@@ -35,7 +38,22 @@ const App = () => {
   checkBalance();
 }, [address, editionDrop]);
 
+const mintNft = async () => {
+  try {
+    setIsClaiming(true);
+    await editionDrop.claim("0", 1);
+    console.log(`Successfully Minted! Check it out on OpenSea: https://testnets.opensea.io/assets/${editionDrop.getAddress()}/0`);
+    setHasClaimedNFT(true);
+  } catch (error){
+    setHasClaimedNFT(false);
+    console.error("Failed to mint NFT", error);
+  } finally {
+    setIsClaiming(false);
+  }
+};
+
   if (!address){
+    // if user has not connected wallet - this will render on the screen
     return (
       <div className="landing">
         <h1>Welcome to UpCyDAO</h1>
@@ -44,9 +62,20 @@ const App = () => {
     );
   }
 
+
+
+  // if user has connected their wallet - this will render on the screen 
+
   return (
-    <div className="landing">
-      <h1>🔗 Your Wallet is Connected...</h1>
+
+    <div className='mint-nft'>
+      <h2>🌊 Mint your free UpCyDAO Membership NFT</h2>
+      <button
+      disabled={isClaiming}
+      onClick={mintNft}
+      >
+        {isClaiming ? "Minting..." : "Mint your NFT (for FREE.99 😘)"}
+      </button>
     </div>
   );
 };
