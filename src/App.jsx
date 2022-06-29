@@ -62,8 +62,17 @@ const mintNft = async () => {
     );
   }
 
+  // if the user has minted the token - this will render 
+  if (hasClaimedNFT){
+    return (
+      <div className='member-page'>
+        <h1>UpCyDAO Member Page</h1>
+        <p>🎊 Congrats on being a member 🎊</p>
+      </div>
+    )
+  }
 
-
+ 
   // if user has connected their wallet - this will render on the screen 
 
   return (
