@@ -1,0 +1,39 @@
+// attempt at splitting proposal code into two files to get the second proposal to mint
+
+import sdk from "./1-initialize-sdk.js";
+import { ethers } from "ethers";
+
+// the governance contract 
+const vote = sdk.getVote("0x813244Ca4AC13550F7411A5Cd40C29AF6Cb35BA5");
+
+// the ERC-20 contract
+const token = sdk.getToken("0xeEe746dcE397378567039d845740D9bf28Fb399D");
+
+(async () => {
+    try {
+        // creating a proposal to transfer 6,900 tokens for being amazing.
+        const amount = 6_900;
+        const description = "Should UpCyDAO transfer " + amount + " tokens from the treasury to " + process.env.WALLET_ADDRESS + " for being persistent?";
+        const executions = [
+            {
+                // sending 0 ETH - only $UPCY
+                nativeTokenValue: token.encoder.encode(
+                    // Transferring from the treasury to my wallet
+                    "transfer", 
+                    [
+                        process.env.WALLET_ADDRESS,
+                        ethers.utils.parseUnits(amount.toString(), 18),
+                    ]
+                ), 
+                toAddress: token.getAddress(),
+            },
+        ];
+        await vote.propose(description, executions);
+
+        console.log("Successfully created a proposal to reward myself from the treasury, will see if others agree and give me a vote!");
+    } catch (error){
+        console.error("Failed to create proposal.", error);
+        process.exit(1);
+    }
+    
+})();
