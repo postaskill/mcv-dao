@@ -16,3 +16,5 @@ const token = sdk.getToken("0xeEe746dcE397378567039d845740D9bf28Fb399D");
         console.error("😿 Failed to print money", error);  
     }
 })();
+
+ 
