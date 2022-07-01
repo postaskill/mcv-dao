@@ -1,4 +1,4 @@
-import { useAddress, useMetamask, useEditionDrop, useToken } from '@thirdweb-dev/react';
+import { useAddress, useMetamask, useEditionDrop, useToken, useVote } from '@thirdweb-dev/react';
 import { useState, useEffect, useMemo } from 'react';
 
 const App = () => {
@@ -11,6 +11,12 @@ const App = () => {
   // Initialize our editionDrop contract
 
   const token = useToken("0xeEe746dcE397378567039d845740D9bf28Fb399D");
+  // ERC-20 from https://rinkeby.etherscan.io/address/0xeEe746dcE397378567039d845740D9bf28Fb399D
+
+
+  const vote = useVote("0x813244Ca4AC13550F7411A5Cd40C29AF6Cb35BA5");
+  // Vote ERC-20 from https://rinkeby.etherscan.io/address/0x813244Ca4AC13550F7411A5Cd40C29AF6Cb35BA5
+  //  provides access to coded proposals 
 
 
   const [hasClaimedNFT, setHasClaimedNFT] = useState(false);
@@ -30,12 +36,65 @@ const App = () => {
     return str.substring(0, 6) + "..." + str.substring(str.length -4);
   };
 
+  const [proposals, setProposals] = useState([]);
+  const [isVoting, SetIsVoting] = useState(false);
+  const [hasVoted, setHasVoted] = useState(false);
+
+
+useEffect(() => {
+  if (!hasClaimedNFT){
+    return;
+  }
+  
+  const getAllProposals = async () => {
+    try {
+      const proposals = await vote.getAll();
+      setProposals(proposals);
+      console.log("💯 Proposals: ", proposals);
+    } catch (error) {
+      console.log("Failed to get proposals.", error);
+    }
+  };
+  getAllProposals();
+}, [hasClaimedNFT, vote]);
+
+// checking to see if the member has already voted
+useEffect(() => {
+  if (!hasClaimedNFT){
+    return;
+  }
+  // will return nothing if the proposals have not loaded 
+if (!proposals.length){
+  return;
+}
+
+const checkIfUserHasVoted = async () => {
+  try {
+    const hasVoted = await vote.hasVoted(proposals[0].proposalId, address);
+    setHasVoted(hasVoted);
+    if (hasVoted){
+      console.log("User has already voted.");
+    } else {
+      console.log("User has not voted yet.");
+    } 
+  } catch (error) {
+    console.error("Failed to check if wallet has voted", error);
+  }
+};
+checkIfUserHasVoted();
+
+
+
+
+
+}, [hasClaimedNFT, proposals, address, vote]);
+
+
   // returns all members holding the NFT !hasClaimedNFT??? 
   useEffect(() => {
     if (!hasClaimedNFT){
       return;
     }
-
     const getAllAddresses = async () => {
       try {
         // references all the members who hold the NFT with the tokenId of 0
