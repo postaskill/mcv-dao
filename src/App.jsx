@@ -189,7 +189,9 @@ const App = () => {
     // If the user hasn't connected their wallet, then let them call connectWithMetamask.
     if (!address) {
         return (
+          
             <div className="landing">
+
                 <h1>Welcome to UpCyDAO</h1>
                 <button onClick={connectWithMetamask} className="btn-hero">
                     Connect your wallet
@@ -204,7 +206,7 @@ const App = () => {
         return (
             <div className="member-page">
                 <h1>UpCyDAO Member Page</h1>
-                <p>Congratulations on being a member</p>
+                <p className="thankyou">Thank You for being a member!</p>
                 <div>
                     <div>
                         <h2>Member List</h2>
@@ -334,7 +336,7 @@ const App = () => {
                             <button disabled={isVoting || hasVoted} type="submit">
                                 {isVoting ? "Voting..." : hasVoted ? "You Have Already Voted" : "Submit Your Votes"}
                             </button>
-                            {!hasVoted && <small>This will trigger multiple transactions that you will need to sign.</small>}
+                            {!hasVoted && <small className="note">This will trigger multiple transactions that you will need to sign.</small>}
                         </form>
                     </div>
                 </div>
@@ -347,7 +349,7 @@ const App = () => {
         <div className="mint-nft">
             <h1>Mint your UpCyDAO Membership NFT</h1>
             <button disabled={isClaiming} onClick={mintNft}>
-                {isClaiming ? "Minting..." : "Mint your NFT (FREE.99 😉)"}
+                {isClaiming ? "Minting..." : "Mint your Free NFT"}
             </button>  
         </div>
     );
